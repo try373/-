@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة أسطول شركة هندسية</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7.18.9/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Noto Sans Arabic', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    // بيانات السيارات والمهندسين (محاكاة قاعدة بيانات)
+    const initialCars = [
+      { id: 1, type: "تويوتا كامري", model: "2023", status: "جاهزة", mileage: 15000, lastMaintenance: "2025-07-01" },
+      { id: 2, type: "هيونداي سوناتا", model: "2022", status: "في الصيانة", mileage: 22000, lastMaintenance: "2025-06-15" },
+      { id: 3, type: "فورد اكسبلورر", model: "2021", status: "جاهزة", mileage: 30000, lastMaintenance: "2025-08-01" },
+      { id: 4, type: "نيسان باترول", model: "2023", status: "جاهزة", mileage: 10000, lastMaintenance: "2025-07-20" },
+    ];
+
+    const initialEngineers = [
+      { id: 1, name: "أحمد محمد", task: "الإشراف على مشروع الرياض", status: "نشط" },
+      { id: 2, name: "محمد علي", task: "صيانة موقع جدة", status: "نشط" },
+      { id: 3, name: "خالد عبدالله", task: "غير مُكلف", status: "متاح" },
+      { id: 4, name: "عبدالرحمن صالح", task: "الإشراف على مشروع الدمام", status: "نشط" },
+      { id: 5, name: "سعيد عمر", task: "غير مُكلف", status: "متاح" },
+      { id: 6, name: "فيصل خالد", task: "الإشراف على مشروع مكة", status: "نشط" },
+      { id: 7, name: "عبدالعزيز حسن", task: "غير مُكلف", status: "متاح" },
+      { id: 8, name: "راشد سالم", task: "صيانة موقع المدينة", status: "نشط" },
+      { id: 9, name: "ماجد ناصر", task: "غير مُكلف", status: "متاح" },
+      { id: 10, name: "يوسف إبراهيم", task: "الإشراف على مشروع الخبر", status: "نشط" },
+    ];
+
+    function App() {
+      const [activeTab, setActiveTab] = useState("home");
+      const [cars, setCars] = useState(initialCars);
+      const [newCar, setNewCar] = useState({ type: "", model: "", status: "جاهزة", mileage: "", lastMaintenance: "" });
+
+      const addCar = (e) => {
+        e.preventDefault();
+        if (!newCar.type || !newCar.model || !newCar.mileage || !newCar.lastMaintenance) {
+          alert("يرجى ملء جميع الحقول");
+          return;
+        }
+        const car = {
+          id: cars.length + 1,
+          type: newCar.type,
+          model: newCar.model,
+          status: newCar.status,
+          mileage: parseInt(newCar.mileage),
+          lastMaintenance: newCar.lastMaintenance,
+        };
+        setCars([...cars, car]);
+        setNewCar({ type: "", model: "", status: "جاهزة", mileage: "", lastMaintenance: "" });
+      };
+
+      return (
+        <div class="container mx-auto p-4">
+          <h1 class="text-3xl font-bold text-center mb-6">إدارة أسطول الشركة الهندسية</h1>
+          
+          {/* قائمة التنقل */}
+          <nav class="flex justify-center space-x-4 mb-6">
+            <button 
+              class={`px-4 py-2 rounded ${activeTab === "home" ? "bg-blue-600 text-white" : "bg-gray-200"}`} 
+              onClick={() => setActiveTab("home")}>
+              الرئيسية
+            </button>
+            <button 
+              class={`px-4 py-2 rounded ${activeTab === "cars" ? "bg-blue-600 text-white" : "bg-gray-200"}`} 
+              onClick={() => setActiveTab("cars")}>
+              إدارة السيارات
+            </button>
+            <button 
+              class={`px-4 py-2 rounded ${activeTab === "engineers" ? "bg-blue-600 text-white" : "bg-gray-200"}`} 
+              onClick={() => setActiveTab("engineers")}>
+              إدارة المهندسين
+            </button>
+            <button 
+              class={`px-4 py-2 rounded ${activeTab === "maintenance" ? "bg-blue-600 text-white" : "bg-gray-200"}`} 
+              onClick={() => setActiveTab("maintenance")}>
+              جدول الصيانة
+            </button>
+            <button 
+              class={`px-4 py-2 rounded ${activeTab === "reports" ? "bg-blue-600 text-white" : "bg-gray-200"}`} 
+              onClick={() => setActiveTab("reports")}>
+              التقارير
+            </button>
+          </nav>
+
+          {/* المحتوى */}
+          {activeTab === "home" && (
+            <div class="bg-white p-6 rounded shadow">
+              <h2 class="text-2xl font-semibold mb-4">نظرة عامة</h2>
+              <p>عدد السيارات: {cars.length}</p>
+              <p>عدد المهندسين: {initialEngineers.length}</p>
+              <p>السيارات الجاهزة: {cars.filter(car => car.status === "جاهزة").length}</p>
+              <p>المهندسين النشطين: {initialEngineers.filter(eng => eng.status === "نشط").length}</p>
+            </div>
+          )}
+
+          {activeTab === "cars" && (
+            <div class="bg-white p-6 rounded shadow">
+              <h2 class="text-2xl font-semibold mb-4">إدارة السيارات</h2>
+              {/* نموذج إضافة سيارة */}
+              <form onSubmit={addCar} class="mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="نوع السيارة"
+                    value={newCar.type}
+                    onChange={(e) => setNewCar({ ...newCar, type: e.target.value })}
+                    class="border p-2 rounded w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="الطراز"
+                    value={newCar.model}
+                    onChange={(e) => setNewCar({ ...newCar, model: e.target.value })}
+                    class="border p-2 rounded w-full"
+                  />
+                  <select
+                    value={newCar.status}
+                    onChange={(e) => setNewCar({ ...newCar, status: e.target.value })}
+                    class="border p-2 rounded w-full"
+                  >
+                    <option value="جاهزة">جاهزة</option>
+                    <option value="في الصيانة">في الصيانة</option>
+                  </select>
+                  <input
+                    type="number"
+                    placeholder="الأميال"
+                    value={newCar.mileage}
+                    onChange={(e) => setNewCar({ ...newCar, mileage: e.target.value })}
+                    class="border p-2 rounded w-full"
+                  />
+                  <input
+                    type="date"
+                    value={newCar.lastMaintenance}
+                    onChange={(e) => setNewCar({ ...newCar, lastMaintenance: e.target.value })}
+                    class="border p-2 rounded w-full"
+                  />
+                </div>
+                <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">
+                  إضافة سيارة
+                </button>
+              </form>
+              {/* جدول السيارات */}
+              <table class="w-full table-auto">
+                <thead>
+                  <tr class="bg-gray-200">
+                    <th class="px-4 py-2">المعرف</th>
+                    <th class="px-4 py-2">النوع</th>
+                    <th class="px-4 py-2">الطراز</th>
+                    <th class="px-4 py-2">الحالة</th>
+                    <th class="px-4 py-2">الأميال</th>
+                    <th class="px-4 py-2">آخر صيانة</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cars.map(car => (
+                    <tr key={car.id}>
+                      <td class="border px-4 py-2">{car.id}</td>
+                      <td class="border px-4 py-2">{car.type}</td>
+                      <td class="border px-4 py-2">{car.model}</td>
+                      <td class="border px-4 py-2">{car.status}</td>
+                      <td class="border px-4 py-2">{car.mileage}</td>
+                      <td class="border px-4 py-2">{car.lastMaintenance}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {activeTab === "engineers" && (
+            <div class="bg-white p-6 rounded shadow">
+              <h2 class="text-2xl font-semibold mb-4">إدارة المهندسين</h2>
+              <table class="w-full table-auto">
+                <thead>
+                  <tr class="bg-gray-200">
+                    <th class="px-4 py-2">المعرف</th>
+                    <th class="px-4 py-2">الاسم</th>
+                    <th class="px-4 py-2">المهمة</th>
+                    <th class="px-4 py-2">الحالة</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {initialEngineers.map(eng => (
+                    <tr key={eng.id}>
+                      <td class="border px-4 py-2">{eng.id}</td>
+                      <td class="border px-4 py-2">{eng.name}</td>
+                      <td class="border px-4 py-2">{eng.task}</td>
+                      <td class="border px-4 py-2">{eng.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {activeTab === "maintenance" && (
+            <div class="bg-white p-6 rounded shadow">
+              <h2 class="text-2xl font-semibold mb-4">جدول الصيانة</h2>
+              <p>قائمة الصيانة القادمة:</p>
+              <ul class="list-disc mr-5">
+                {cars.map(car => (
+                  <li key={car.id}>
+                    {car.type} - آخر صيانة: {car.lastMaintenance} (تنبيه: تحتاج صيانة كل 6 أشهر)
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {activeTab === "reports" && (
+            <div class="bg-white p-6 rounded shadow">
+              <h2 class="text-2xl font-semibold mb-4">التقارير</h2>
+              <p>إجمالي الأميال المقطوعة: {cars.reduce((sum, car) => sum + car.mileage, 0)} كم</p>
+              <p>السيارات في الصيانة: {cars.filter(car => car.status === "في الصيانة").length}</p>
+              <p>المهندسين المتاحين: {initialEngineers.filter(eng => eng.status === "متاح").length}</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>
